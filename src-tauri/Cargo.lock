@@ -44,14 +44,12 @@ checksum = "28b2cd92db5cbd74e8e5028f7e27dd7aa3090e89e4f2a197cc7c8dfb69c7063b"
 name = "app"
 version = "0.1.0"
 dependencies = [
- "bson 1.2.2",
  "futures",
  "mongodb",
  "serde",
  "serde_json",
  "tauri",
  "tauri-build",
- "tokio",
 ]
 
 [[package]]
@@ -200,26 +198,9 @@ dependencies = [
 
 [[package]]
 name = "bson"
-version = "1.2.2"
+version = "2.0.0-beta.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "38b6553abdb9d2d8f262f0b5bccf807321d5b7d1a12796bcede8e1f150e85f2e"
-dependencies = [
- "base64",
- "chrono",
- "hex",
- "lazy_static",
- "linked-hash-map",
- "rand 0.7.3",
- "serde",
- "serde_json",
- "uuid",
-]
-
-[[package]]
-name = "bson"
-version = "2.0.0-beta"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "441bd9b15699ed6fd29a3546ed614a943a9dbab851b799e2344f3f11b3230bdc"
+checksum = "82b538f08f421ed777d19b7dadf2c0a8ee36e4a1571691fcb4b8fb760825abd2"
 dependencies = [
  "ahash",
  "base64",
@@ -1863,14 +1844,14 @@ dependencies = [
 
 [[package]]
 name = "mongodb"
-version = "2.0.0-beta"
+version = "2.0.0-beta.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e7bf6da4c15a6eea66750989ff2f3319d6ca9fdc8f903d4dc1c0ef72541af905"
+checksum = "5914bd2dfa3a20660f95a8713ed7ae971ac00ed3b3a668051dff055c92b57c62"
 dependencies = [
  "async-trait",
  "base64",
  "bitflags 1.2.1",
- "bson 2.0.0-beta",
+ "bson",
  "chrono",
  "derivative",
  "futures-core",

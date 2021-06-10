@@ -2,11 +2,23 @@
   all(not(debug_assertions), target_os = "windows"),
   windows_subsystem = "windows"
 )]
-use mongodb::{ Client, Collection, options::{ ClientOptions, ServerAddress::{ Tcp }, Credential }, bson::{doc, Document} };
+use mongodb::{ Client,
+    Collection,
+    options::{
+        ClientOptions,
+        ServerAddress::{Tcp},
+        Credential
+    },
+    bson::{
+        doc,
+        Document,
+        oid::ObjectId
+    }
+};
 use serde::{Serialize, Deserialize};
 use std::collections::HashMap;
 use futures::stream::{TryStreamExt};
-use bson::oid::ObjectId;
+//use bson::{Bson, oid::ObjectId};
 
 #[derive(Serialize, Deserialize, Debug)]
 struct UserCredential {
@@ -131,10 +143,10 @@ async fn update_one(db: String, collection:String, object_id: String, new_doc: D
         match &CONNECTION {
             Some(conn) => {
                 let coll: Collection = conn.client.database(&db).collection(&collection);
-                if let Ok(oid) = ObjectId::with_string(&object_id) {
+                if let Ok(obj_id_bson) = ObjectId::parse_str(&object_id){
                     if let Ok(update_result) = coll.update_one(
                         doc! {
-                            "_id": &object_id
+                            "_id": &obj_id_bson
                         },
                         doc! {
                             "$set": new_doc
@@ -144,7 +156,7 @@ async fn update_one(db: String, collection:String, object_id: String, new_doc: D
                         return Err("no collection".into());
                     }
                 } else {
-                    return Err("Wrong ObjectId Supplied".into());
+                     return Err("Wrong ObjectId Supplied".into());
                 }
             },
             None => {
@@ -174,12 +186,39 @@ async fn insert_one(db: String, collection:String, new_doc: Document) -> Result<
     }
 }
 
+#[tauri::command]
+async fn delete_one(db: String, collection:String, object_id: String) -> Result<u64, String> {
+    unsafe {
+        match &CONNECTION {
+            Some(conn) => {
+                let coll: Collection = conn.client.database(&db).collection(&collection);
+                if let Ok(obj_id_bson) = ObjectId::parse_str(&object_id){
+                    if let Ok(delete_result) = coll.delete_one(
+                        doc! {
+                            "_id": &obj_id_bson
+                        },
+                        None).await {
+                        return Ok(delete_result.deleted_count);
+                    } else {
+                        return Err("no collection".into());
+                    }
+                } else {
+                     return Err("Wrong ObjectId Supplied".into());
+                }
+            },
+            None => {
+                return Err("no connection".into());
+            }
+        }
+    }
+}
+
 
 fn main() {
-  tauri::Builder::default()
-    .invoke_handler(tauri::generate_handler![create_connection, find, update_one, insert_one])
-    .run(tauri::generate_context!())
-    .expect("error while running tauri application");
+    tauri::Builder::default()
+        .invoke_handler(tauri::generate_handler![create_connection, find, update_one, insert_one, delete_one])
+        .run(tauri::generate_context!())
+        .expect("error while running tauri application");
   // create_connection(ConnectionDetails {
   //     hostname: "localhost".to_string(),
   //     port: 27017,

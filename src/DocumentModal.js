@@ -6,14 +6,31 @@ const DocumentModal = ({type, doc, collectionDetail}) => {
   const [show, setShow] = useState(false);
   const [docText, changeText] = useState(JSON.stringify(doc));
 
-  const handleSave = async () => {
+  const handleUpdate = async () => {
     const jsonValue = JSON.parse(docText);
     try {
       console.log("updating => ", doc);
       const count = await invoke("update_one", {
         db: collectionDetail.db,
         collection: collectionDetail.collection,
-        objectId: doc._id.$oid, newDoc: jsonValue});
+        objectId: doc._id.$oid,
+        newDoc: jsonValue});
+      console.log("success=> ",count);
+      setShow(false);
+    } catch(e) {
+      console.log(e);
+    }
+  };
+
+  const handleInsert = async () => {
+    const jsonValue = JSON.parse(docText);
+    try {
+      console.log("inserting => ", jsonValue);
+      const count = await invoke("insert_one", {
+        db: collectionDetail.db,
+        collection: collectionDetail.collection,
+        newDoc: jsonValue
+      });
       console.log("success=> ",count);
       setShow(false);
     } catch(e) {
@@ -25,8 +42,8 @@ const DocumentModal = ({type, doc, collectionDetail}) => {
 
   const handleShow = () => setShow(true);
 
-  const saveButton =   type == "update" ? <Button variant="primary" onClick={handleSave}>
-      Save Changes
+  const saveButton =  type !== "" ? <Button variant="primary" onClick={type == "update" ? handleUpdate: handleInsert}>
+      {type == "update" ? "Update" : "Insert"}
     </Button> : "";
 
   return (

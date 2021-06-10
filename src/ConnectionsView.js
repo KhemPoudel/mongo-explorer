@@ -14,7 +14,7 @@ const ConnectionsView = ({conn}) => {
 
     let {allData} = collectionData;
 
-    if(activeCollectionIndex < 0) {
+    //if(activeCollectionIndex < 0) {
       console.log("calling invoke");
       try {
         const docs = await invoke("find", {db: dbName, collection: collectionName});
@@ -25,7 +25,7 @@ const ConnectionsView = ({conn}) => {
       } catch(e) {
         console.log(e);
       }
-    }
+    //}
 
     changeCollectionData({allData, activeCollectionIndex});
   }
